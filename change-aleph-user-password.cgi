@@ -14,12 +14,7 @@ import subprocess
 import datetime
 import re
 
-ALEPH_URL = 'http://libtest.csc.fi:8992'
-ALEPH_USER_LIBRARY = 'usr00'
-DB_CONFIG = 'aleph/aleph@10.0.2.2:1521/ALEPH20'
-FILES_DIR = '/vagrant/tmp/'
-FILE_PREFIX = 'user/'
-LOG_DIR = '/vagrant/logs/'
+execfile('change-aleph-user-password.config') # Load config
 
 db = cx_Oracle.connect(DB_CONFIG)
 
