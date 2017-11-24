@@ -4,3 +4,4 @@ tmp/
 instantclient-basic-linux.x64-12.2.0.1.0.zip
 .DS_Store
 change-aleph-user-password.config
+*.cgic

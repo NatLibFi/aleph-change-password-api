@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 # -*- coding: utf8 -*-
 
 import cgi
@@ -14,11 +14,55 @@ import subprocess
 import datetime
 import re
 
-execfile('change-aleph-user-password.config') # Load config
+def main():
+  if os.environ['REQUEST_METHOD'] != 'POST':
+    return_error(404, 'Not Found')
 
-db = cx_Oracle.connect(DB_CONFIG)
+  try:
+    data = json.loads(sys.stdin.read())
 
-cgitb.enable()
+    username = data['username']
+    password = data['password']
+    new_password = data['new_password']
+
+    if username == '' or password == '' or new_password == '':
+      raise
+  except:
+    return_error(400, 'Bad Request')
+
+  try:
+    user_valid = validate_user(username, password)
+  except:
+    return_error(500, 'Internal Server Error')
+
+  if not user_valid:
+    return_error(401, 'Unauthorized')
+
+  db_user = fetch_user_from_db(username)
+
+  db_user[2]['value'] = new_password
+
+  formatted_row = format_row(db_user)
+
+  file_id = write_input_file(formatted_row)
+
+  output, error = execute_program(file_id)
+
+  write_log_file(username, formatted_row, output, error)
+
+  failure = False
+
+  for pattern in ['Param Errors Found:', 'Param Initialization Failure, Exiting !!!']:
+    if (re.search(pattern, output, flags=re.MULTILINE)):
+      failure = True
+      break
+
+  if failure:
+    return_error(500, 'Internal Server Error')
+
+  start_http('text/plain', {'Status': 200})
+
+  print "ok"
 
 def start_http(mimetype=None, headers={}):
   if mimetype:
@@ -34,9 +78,7 @@ def return_error(code, message):
     sys.exit()
 
 def validate_user(username, password):
-  url = '%s/X?op=user-auth&library=%s&staff_user=%s&staff_pass=%s' % (ALEPH_URL, ALEPH_USER_LIBRARY, username, password)
-
-  xml = urllib2.urlopen(url).read()
+  xml = urllib2.urlopen('%s/X?op=user-auth&library=%s&staff_user=%s&staff_pass=%s' % (ALEPH_URL, ALEPH_USER_LIBRARY, username, password)).read()
 
   xml = ElementTree.fromstring(xml)
 
@@ -50,19 +92,12 @@ def validate_user(username, password):
   if not credentialsValid:
     return False
 
-  userLibrary = xml.find('./z66/z66-user-library').text
-  name = xml.find('./z66/z66-name').text
-  department = xml.find('./z66/z66-department').text
-  email = xml.find('./z66/z66-email').text
+  return True
 
-  return {
-    'userLibrary': userLibrary,
-    'name': name,
-    'department': department,
-    'email': email
-  }
 
 def fetch_user_from_db(username):
+  db = cx_Oracle.connect(DB_CONFIG)
+
   cursor = db.cursor() 
 
   cursor.execute("SELECT * FROM usr00.z66 WHERE Z66_REC_KEY = '%s'" % username.upper())
@@ -94,6 +129,29 @@ def format_row(row):
 
   return ''.join(result)
 
+def write_input_file(formatted_row):
+  file_id = str(uuid4())[:7]
+
+  f = open('%s%s%s' % (FILES_DIR, FILE_PREFIX, file_id), 'w')
+
+  f.write(formatted_row)
+
+  f.close()
+
+  return file_id
+
+def execute_program(file_id):
+  p = subprocess.Popen(['/usr/bin/env', 'csh'], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+  p.stdin.write('source /exlibris/aleph/a20_2/alephm/.cshrc\n')
+  p.stdin.write('/exlibris/aleph/a20_2/aleph/proc/p_file_06 USR00,%s,z66,UPDATE,NO-FIX,Y,Y,\n' % file_id)
+  p.stdin.write('exit\n')
+
+  (output, error) = p.communicate()
+
+  p.close()
+
+  return output, error
+
 def write_log_file(username, formatted_row, output, error):
   f = open('%s%s-%s.log' % (LOG_DIR, username, datetime.datetime.now()), 'w')
 
@@ -108,57 +166,9 @@ def write_log_file(username, formatted_row, output, error):
 
   f.close()
 
-if os.environ['REQUEST_METHOD'] != 'POST':
-  return_error(404, 'Not found')
+if __name__ == '__main__':
+  execfile('change-aleph-user-password.config') # Load config
 
-try:
-  data = json.loads(sys.stdin.read())
+  cgitb.enable()
 
-  username = data['username']
-  password = data['password']
-  new_password = data['new_password']
-
-  if username == '' or password == '' or new_password == '':
-    raise
-except:
-  return_error(400, 'Bad Request')
-
-user = validate_user(username, password)
-
-if not user:
-  return_error(401, 'Unauthorized')
-
-db_user = fetch_user_from_db(username)
-
-db_user[2]['value'] = new_password
-
-file_id = str(uuid4())[:7]
-
-f = open('%s%s%s' % (FILES_DIR, FILE_PREFIX, file_id), 'w')
-
-formatted_row = format_row(db_user)
-
-f.write(formatted_row)
-
-f.close()
-
-p = subprocess.Popen(['/usr/bin/env', 'csh'], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-p.stdin.write('source /exlibris/aleph/a20_2/alephm/.cshrc\n')
-p.stdin.write('/exlibris/aleph/a20_2/aleph/proc/p_file_06 USR00,%s%s,z66,UPDATE,NO-FIX,Y,Y,\n' % (FILE_PREFIX, file_id))
-p.stdin.write('exit')
-
-(output, error) = p.communicate()
-
-write_log_file(username, formatted_row, output, error)
-
-failure = False
-
-for pattern in ['Param Errors Found:', 'Param Initialization Failure, Exiting !!!']:
-  if (re.search(pattern, output, flags=re.MULTILINE)):
-    failure = True
-    break
-
-if failure:
-  return_error(500, 'Internal Server Error')
-
-start_http()
+  main()

@@ -1,0 +1,39 @@
+output Execute master cshrc
+Load: /exlibris/aleph/u20_2/alephe/tab/tab100
+Load: /exlibris/aleph/a20_2/usr00/tab/tab100
+
+
+ALEPH/SUN_OS_2, Copyright Ex Libris.
+version 20 revision 01 copy 1, 13-Feb-2009
+start USR00,test_file,z66,UPDATE,NO-FIX,Y,Y,exit  
+procedure=p_file_06
+Fixed param: USR00,test_file,z66,UPDATE,NO-FIX,Y,Y,EXIT, 
+setenv p_active_library "USR00"
+setenv p_input_file_name "test_file"
+setenv p_record "z66"
+setenv p_update_flag "UPDATE"
+setenv p_fix_flag "NO-FIX"
+setenv p_correct_flag "Y"
+setenv p_check_flag "Y"
+setenv p_char_conv "EXIT"
+2nd param (target and user name):  
+3rd param (log file name):         
+Load: /exlibris/aleph/a20_2/aleph/tab/tab_job_type
+Info: Empty table /tmp/utf_files/exlibris/aleph/u20_2/alephe/error_eng/p_file_06
+Info: Empty table /tmp/utf_files/exlibris/aleph/u20_2/alephe/error_eng/p_global
+Load: /tmp/utf_files/exlibris/aleph/a20_2/aleph/error_eng/p_file_06
+Load: /tmp/utf_files/exlibris/aleph/a20_2/aleph/error_eng/p_global
+ 
+Param Errors Found:
+F01:  File /exlibris/aleph/a20_2/usr00/files/test_f does not exist.
+Wrote Z100 record with rec-key: 000081097
+Load: /exlibris/aleph/u20_2/alephe/tab/tab100
+Load: /exlibris/aleph/a20_2/usr00/tab/tab100
+Load: /tmp/utf_files/exlibris/aleph/a20_2/uni50/tab/pc_tab_exp_field.eng
+Load: /tmp/utf_files/exlibris/aleph/a20_2/usr00/tab/pc_tab_exp_field_extended.eng
+Info: Empty table /tmp/utf_files/exlibris/aleph/a20_2/usr00/tab/tab_alert
+ 
+z100_display_information debug mode is off
+ 
+end 
+Param Initialization Failure, Exiting !!
