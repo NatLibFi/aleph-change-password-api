@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/opt/csw/bin/python2.7
 # -*- coding: utf8 -*-
 
 import cgi
