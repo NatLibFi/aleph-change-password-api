@@ -107,7 +107,6 @@ class TestClass(unittest.TestCase):
 
     mock_subprocess_popen.assert_called_once_with(['/usr/bin/env', 'csh'], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     mock_subprocess_popen.return_value.stdin.write.assert_has_calls([call('source /exlibris/aleph/a20_2/alephm/.cshrc\n'), call('/exlibris/aleph/a20_2/aleph/proc/p_file_06 USR00,test,z66,UPDATE,NO-FIX,Y,Y,\n'), call('exit\n')])
-    mock_subprocess_popen.return_value.close.assert_called_once()
 
     self.assertEqual(result, ('test_output', 'test_error'))
 
