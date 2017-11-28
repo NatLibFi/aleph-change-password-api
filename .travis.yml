@@ -1,20 +1,18 @@
 language: python
-
 python:
 - '2.7'
-
 install:
 - pip install cx_Oracle
-
 script:
 - python test.py
-
 after_script:
-  - if test $TRAVIS_BRANCH = "master";then JOB=$JOB_PROD;elif test $TRAVIS_BRANCH = "test";then JOB=$JOB_TEST;elif test $TRAVIS_BRANCH = "fix-ci";then JOB=$JOB_TEST;fi
-  - if test ! -z $JOB;then curl -X POST --data "authtoken=$AUTH_TOKEN&argString=-checkout-reference $TRAVIS_COMMIT" https://melinda-ci.lib.helsinki.fi/api/14/job/$JOB/executions;fi
+- if test $TRAVIS_BRANCH = "master";then JOB=$JOB_PROD;elif test $TRAVIS_BRANCH =
+  "test";then JOB=$JOB_TEST;elif test $TRAVIS_BRANCH = "fix-ci";then JOB=$JOB_TEST;fi
+- if test ! -z $JOB;then curl -X POST --data "authtoken=$AUTH_TOKEN&argString=-checkout-reference
+  $TRAVIS_COMMIT" https://melinda-ci.lib.helsinki.fi/api/14/job/$JOB/executions;fi
 env:
   global:
-    - SKIP_SASS_BINARY_DOWNLOAD_FOR_CI=true
-    - JOB_PROD=638b36b9-709e-4625-bcd4-2029ff2bef58
-    - JOB_TEST=1815b0f8-44dd-4011-a394-3afc61b05bff
-    - secure: "W4cbCJp7B7t2D+8Kc3Nt1slV6OslFLPL1CtmcQYCT0MLKJLYxivH08AaLmWDIixVLZdgTFJlqG0O3329hkg18FUTD+aLYtxl7R9Nc4iDRTv5jpavl/cu+5W0Xczf8e5m5lAKF5TZmSK521AZVgLLzZZrwvsfzYKaU1bwN/TYVc0i31KtjECC82G81kyXSsFUz/zwsnOukDos3I8j+R0RKycvGUXeZo+Hapv9doFAbDoJ0pDUUw9gnMa1DVRIG7Io54r+ymK2/mwnfwlClQTwgwo5lwnYJQ0TE8HzDhiwsTAwomxylCS6hVEfJ9mUYUDyh8H53r8CULfcEdM09OgaxWazNN4NhH/MaeaUaSt3LaaX8j5Y6YOfAaJAwyyfkGC3fzYghrT64mzdRVZPzSn2vt1f8l60kz22c4vJ+9g+PXfSrq0YzXchjtHMI4UMYZi7KNZDBQyBFvxpDYuPQtzX3tu/WV+3E3hCG34gWVOFNXAwP8baDpOzzuuaXt9CZQZPdfh1Xe9yc1eU4FEW5XzPPSxILF3iQ8+xvXsIbviA5reZqmPkzdZc7zkfFRZsWTf80liS5jwTAZyIGOR8mEod8o5CYLXLxQqBRWDL5eZwuvCvy7DxPuh4DB3ts1yalNlrW4qtY24fDj6zhpB6OLSVb7/sN8OZhOuKkcxOY3ehbLA="
+  - SKIP_SASS_BINARY_DOWNLOAD_FOR_CI=true
+  - JOB_PROD=638b36b9-709e-4625-bcd4-2029ff2bef58
+  - JOB_TEST=1815b0f8-44dd-4011-a394-3afc61b05bff
+  - secure: oRmXBy2L4J6Y2QirBPCw+baCBOStTFs5FjrQow5AortWRUWf54lId16whisrE/vQw1yYWdShfjGUcInpFQ1p0lW56h99wHL8uAXFvDJOPMm4x0JjmmTvuP/x77CPeOPEn+0dcaZ4Dehq/AkOzdXztNk+isq8Dq//24+ROlV5FFlG26uZvdBuZImR17BPSZ7LdOVUvHMe+3E2ADobvJH2TIH+lqVyr+fuMRXkoq+O+zcVYYDh/aucmcpE845Jw02SfNifpw/DxHc6aHljvM2oLWSg6i4UC3p7Hh6QYCPSqYiEyNG6f4pa9D6A2oQrq6EnYn8E4G6MR4nLyrl7giQVZef4Q27JjM95yeDVCMfXGRoFHBL65jkrWILKzbmHxmvzDqqpAkXscNUjXwbtJz6PbBQ1hOYrvELh6T/Jx1QpQfPGHswFYC0lsB/dj6F/hYgIQWGmn3IWbQvvt6q0z3PvC8lDOsqcWyR956yGHPa9NKLzrYwuC1zVbNsMqSScwWwsuHA6p5imgJH2AY4MK7QEs/4xLwcBwvuU4cMSAIO6LnBfEjlpx9LZ4C2um7qMS6LgEbcupG35nathn6aILtbV77/tuDFxIcPj0Wi2qh2AKZA0j7TeOMxfoCzJi1VviJEclIB3dB6Y8s5utHMezoRg8k7+3EvSwxTMFsJwkLA59zQ=
