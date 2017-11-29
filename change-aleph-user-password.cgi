@@ -4,7 +4,6 @@
 import cgi
 import sys
 import json
-import cgitb
 import os
 import urllib2
 import xml.etree.ElementTree as ElementTree
@@ -168,7 +167,5 @@ def write_log_file(username, formatted_row, output, error):
 
 if __name__ == '__main__':
   execfile(os.getenv('CONFIGURATION_FILE', './config.py')) # Load config
-
-  cgitb.enable()
 
   main()
