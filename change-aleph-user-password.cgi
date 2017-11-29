@@ -39,6 +39,8 @@ def main():
 
   db_user = fetch_user_from_db(username)
 
+  formatted_row_clean = format_row(db_user)
+
   db_user[2]['value'] = new_password
 
   formatted_row = format_row(db_user)
@@ -49,7 +51,7 @@ def main():
 
   os.remove('%s%s%s' % (FILES_DIR, FILE_PREFIX, file_id))
 
-  write_log_file(username, formatted_row, output, error)
+  write_log_file(username, formatted_row_clean, output, error)
 
   failure = False
 

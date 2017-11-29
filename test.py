@@ -210,11 +210,12 @@ class TestClass(unittest.TestCase):
         'desc': ('Z66_USER_LIBRARY', cx_Oracle.FIXED_CHAR, 5, 5, None, None, 0)
       },
       {
-        'value': 'test',
+        'value': '',
         'desc': ('Z66_USER_PASSWORD', cx_Oracle.FIXED_CHAR, 10, 10, None, None, 0)
       }
     ]
 
+    expected_formatted_row_clean = 'TEST      GROUP          '
     expected_formatted_row = 'TEST      GROUPtest      '
 
     with self.assertRaises(SystemExit): 
@@ -224,7 +225,7 @@ class TestClass(unittest.TestCase):
     mock_fetch_user_from_db.assert_called_once_with('test')
     mock_write_input_file.assert_called_once_with(expected_formatted_row)
     mock_execute_program.assert_called_once_with(mock_write_input_file.return_value)
-    mock_write_log_file.assert_called_once_with('test', expected_formatted_row, mock_execute_program.return_value[0], mock_execute_program.return_value[1])
+    mock_write_log_file.assert_called_once_with('test', expected_formatted_row_clean, mock_execute_program.return_value[0], mock_execute_program.return_value[1])
     mock_os_remove.assert_called_once_with('/tmp/user/008a2cc')
     self.assertEqual(mock_stdout.getvalue(), expected_output)
 
@@ -253,20 +254,21 @@ class TestClass(unittest.TestCase):
         'desc': ('Z66_USER_LIBRARY', cx_Oracle.FIXED_CHAR, 5, 5, None, None, 0)
       },
       {
-        'value': 'test',
+        'value': '',
         'desc': ('Z66_USER_PASSWORD', cx_Oracle.FIXED_CHAR, 10, 10, None, None, 0)
       }
     ]
 
+    expected_formatted_row_clean = 'TEST      GROUP          '
     expected_formatted_row = 'TEST      GROUPtest      '
-
+    
     changeAlephUserPassword.main()
 
     mock_validate_user.assert_called_once_with('test', 'test')
     mock_fetch_user_from_db.assert_called_once_with('test')
     mock_write_input_file.assert_called_once_with(expected_formatted_row)
     mock_execute_program.assert_called_once_with(mock_write_input_file.return_value)
-    mock_write_log_file.assert_called_once_with('test', expected_formatted_row, mock_execute_program.return_value[0], mock_execute_program.return_value[1])
+    mock_write_log_file.assert_called_once_with('test', expected_formatted_row_clean, mock_execute_program.return_value[0], mock_execute_program.return_value[1])
     mock_os_remove.assert_called_once_with('/tmp/user/008a2cc')
     self.assertEqual(mock_stdout.getvalue(), expected_output)
 
