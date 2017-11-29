@@ -142,7 +142,7 @@ def write_input_file(formatted_row):
 def execute_program(file_id):
   p = subprocess.Popen(['/usr/bin/env', 'csh'], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
   p.stdin.write('source /exlibris/aleph/a20_2/alephm/.cshrc\n')
-  p.stdin.write('/exlibris/aleph/a20_2/aleph/proc/p_file_06 USR00,%s,z66,UPDATE,NO-FIX,Y,Y,\n' % file_id)
+  p.stdin.write('/exlibris/aleph/a20_2/aleph/proc/p_file_06 USR00,%s%s,z66,UPDATE,NO-FIX,Y,Y,\n' % (FILE_PREFIX, file_id))
   p.stdin.write('exit\n')
 
   (output, error) = p.communicate()
