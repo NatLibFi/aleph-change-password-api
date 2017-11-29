@@ -163,8 +163,6 @@ def write_log_file(username, formatted_row, output, error):
 
   f.write(json.dumps(obj))
 
-  f.close()
-
 if __name__ == '__main__':
   execfile(os.getenv('CONFIGURATION_FILE', './config.py')) # Load config
 
