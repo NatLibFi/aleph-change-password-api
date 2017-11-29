@@ -18,7 +18,7 @@ changeAlephUserPassword = imp.load_source('changeAlephUserPassword', 'change-ale
 changeAlephUserPassword.ALEPH_URL = 'http://test.com'
 changeAlephUserPassword.ALEPH_USER_LIBRARY = 'usr00'
 changeAlephUserPassword.DB_CONFIG = 'aleph/aleph@127.0.0.1:1521/ALEPH20'
-changeAlephUserPassword.FILES_DIR = '/vagrant/tmp/'
+changeAlephUserPassword.FILES_DIR = '/tmp/'
 changeAlephUserPassword.FILE_PREFIX = 'user/'
 changeAlephUserPassword.LOG_DIR = 'logs/'
 
@@ -187,13 +187,14 @@ class TestClass(unittest.TestCase):
 
   @patch('sys.stdout', new_callable=StringIO)
   @patch('sys.stdin', new=StringIO('{"username":"test","password":"test","new_password":"test"}'))
+  @patch('os.remove')
   @patch('changeAlephUserPassword.write_log_file')
   @patch('changeAlephUserPassword.execute_program', return_value=(open('test/output_error.txt', 'r').read(), None))
   @patch('changeAlephUserPassword.write_input_file', return_value='008a2cc')
   @patch('changeAlephUserPassword.fetch_user_from_db')
   @patch('changeAlephUserPassword.validate_user', return_value=True)
   @patch.dict(os.environ, {'REQUEST_METHOD': 'POST'})
-  def test_program_error(self, mock_validate_user, mock_fetch_user_from_db, mock_write_input_file, mock_execute_program, mock_write_log_file, mock_stdout):
+  def test_program_error(self, mock_validate_user, mock_fetch_user_from_db, mock_write_input_file, mock_execute_program, mock_write_log_file, mock_os_remove, mock_stdout):
     expected_output = ('Content-Type: text/plain\n'
                        'Status: 500\n'
                        'Cache-Control: no-cache, no-store, max-age=0\n\n'
@@ -224,9 +225,11 @@ class TestClass(unittest.TestCase):
     mock_write_input_file.assert_called_once_with(expected_formatted_row)
     mock_execute_program.assert_called_once_with(mock_write_input_file.return_value)
     mock_write_log_file.assert_called_once_with('test', expected_formatted_row, mock_execute_program.return_value[0], mock_execute_program.return_value[1])
+    mock_os_remove.assert_called_once_with('/tmp/user/008a2cc')
     self.assertEqual(mock_stdout.getvalue(), expected_output)
 
   @patch('sys.stdout', new_callable=StringIO)
+  @patch('os.remove')
   @patch('changeAlephUserPassword.write_log_file')
   @patch('changeAlephUserPassword.execute_program', return_value=(open('test/output.txt', 'r').read(), None))
   @patch('changeAlephUserPassword.write_input_file', return_value='008a2cc')
@@ -234,7 +237,7 @@ class TestClass(unittest.TestCase):
   @patch('changeAlephUserPassword.validate_user', return_value=True)
   @patch('sys.stdin', new=StringIO('{"username":"test","password":"test","new_password":"test"}'))
   @patch.dict(os.environ, {'REQUEST_METHOD': 'POST'})
-  def test_program_success(self, mock_validate_user, mock_fetch_user_from_db, mock_write_input_file, mock_execute_program, mock_write_log_file, mock_stdout):
+  def test_program_success(self, mock_validate_user, mock_fetch_user_from_db, mock_write_input_file, mock_execute_program, mock_write_log_file, mock_os_remove, mock_stdout):
     expected_output = ('Content-Type: text/plain\n'
                        'Status: 200\n'
                        'Cache-Control: no-cache, no-store, max-age=0\n\n'
@@ -264,6 +267,7 @@ class TestClass(unittest.TestCase):
     mock_write_input_file.assert_called_once_with(expected_formatted_row)
     mock_execute_program.assert_called_once_with(mock_write_input_file.return_value)
     mock_write_log_file.assert_called_once_with('test', expected_formatted_row, mock_execute_program.return_value[0], mock_execute_program.return_value[1])
+    mock_os_remove.assert_called_once_with('/tmp/user/008a2cc')
     self.assertEqual(mock_stdout.getvalue(), expected_output)
 
 if __name__ == '__main__':

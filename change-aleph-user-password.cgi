@@ -47,6 +47,8 @@ def main():
 
   output, error = execute_program(file_id)
 
+  os.remove('%s%s%s' % (FILES_DIR, FILE_PREFIX, file_id))
+
   write_log_file(username, formatted_row, output, error)
 
   failure = False
