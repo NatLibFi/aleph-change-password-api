@@ -167,7 +167,7 @@ def write_log_file(username, formatted_row, output, error):
   f.close()
 
 if __name__ == '__main__':
-  execfile('../conf/change-aleph-user-password.config') # Load config
+  execfile(os.getenv('CONFIGURATION_FILE', './config.py')) # Load config
 
   cgitb.enable()
 
