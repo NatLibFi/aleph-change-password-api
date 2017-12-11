@@ -26,8 +26,14 @@ def main():
 
     if username == '' or password == '' or new_password == '':
       raise
+
   except:
     return_error(400, 'Bad Request')
+
+  (password_valid, error_message) = validate_password(new_password)
+
+  if not password_valid:
+    return_error(400, 'Bad Request: %s' % error_message)
 
   try:
     user_valid = validate_user(username, password)
@@ -80,6 +86,18 @@ def return_error(code, message):
     print code, message
     sys.exit()
 
+def validate_password(password):
+  if (len(password) == 0):
+    return (False, 'Password can not be empty')
+
+  if (re.search(ILLEGAL_CHARACTERS, password)):
+    return (False, 'Password contains illegal characters (%s)' % ILLEGAL_CHARACTERS)
+
+  if (len(password) > MAX_LENGTH):
+    return (False, 'Password can not be longer than %s characters' % MAX_LENGTH)
+
+  return (True, None)
+
 def validate_user(username, password):
   xml = urllib2.urlopen('%s/X?op=user-auth&library=%s&staff_user=%s&staff_pass=%s' % (ALEPH_URL, ALEPH_USER_LIBRARY, username, password)).read()
 
@@ -96,7 +114,6 @@ def validate_user(username, password):
     return False
 
   return True
-
 
 def fetch_user_from_db(username):
   db = cx_Oracle.connect(DB_CONFIG)

@@ -21,8 +21,35 @@ changeAlephUserPassword.DB_CONFIG = 'aleph/aleph@127.0.0.1:1521/ALEPH20'
 changeAlephUserPassword.FILES_DIR = '/tmp/'
 changeAlephUserPassword.FILE_PREFIX = 'user/'
 changeAlephUserPassword.LOG_DIR = 'logs/'
+changeAlephUserPassword.ILLEGAL_CHARACTERS = '#'
+changeAlephUserPassword.MAX_LENGTH = 10
 
 class TestClass(unittest.TestCase):
+  def test_validate_password_valid(self):
+    result, error_message = changeAlephUserPassword.validate_password('1234567890')
+
+    self.assertTrue(result)
+    self.assertIsNone(error_message)
+
+  def test_validate_password_empty(self):
+    result, error_message = changeAlephUserPassword.validate_password('')
+
+    self.assertFalse(result)
+
+    self.assertEqual(error_message, 'Password can not be empty')
+
+  def test_validate_password_too_long(self):
+    result, error_message = changeAlephUserPassword.validate_password('12345678901')
+
+    self.assertFalse(result)
+    self.assertEqual(error_message, 'Password can not be longer than 10 characters')
+
+  def test_validate_password_illegal_characters(self):
+    result, error_message = changeAlephUserPassword.validate_password('12345#789')
+
+    self.assertFalse(result)
+    self.assertEqual(error_message, 'Password contains illegal characters (#)')
+
   @patch('urllib2.urlopen', return_value=open('test/auth.xml', 'r'))
   def test_validate_user_valid(self, mock_urlib2_urlopen):
     result = changeAlephUserPassword.validate_user('test', 'password')
@@ -153,6 +180,21 @@ class TestClass(unittest.TestCase):
       changeAlephUserPassword.main()
     
     self.assertEqual(mock_stdout.getvalue(), expected_output)
+
+  @patch('sys.stdout', new_callable=StringIO)
+  @patch('sys.stdin', new=StringIO('{"username":"test","password":"test","new_password":"12345678#"}'))
+  @patch.dict(os.environ, {'REQUEST_METHOD': 'POST'})
+  def test_invalid_password(self, mock_stdout):
+    expected_output = ('Content-Type: text/plain\n'
+                       'Status: 400\n'
+                       'Cache-Control: no-cache, no-store, max-age=0\n\n'
+                       '400 Bad Request: Password contains illegal characters (#)\n')
+
+    with self.assertRaises(SystemExit): 
+      changeAlephUserPassword.main()
+    
+    self.assertEqual(mock_stdout.getvalue(), expected_output)
+
   @patch('sys.stdout', new_callable=StringIO)
   @patch('sys.stdin', new=StringIO('{"username":"test","password":"test","new_password":"test"}'))
   @patch('changeAlephUserPassword.validate_user', return_value=False)
