@@ -40,8 +40,8 @@ def main():
   except:
     return_error(500, 'Internal Server Error')
 
-  # if not user_valid:
-  #   return_error(401, 'Unauthorized')
+  if not user_valid:
+    return_error(401, 'Unauthorized')
 
   db_user = fetch_user_from_db(username)
 
