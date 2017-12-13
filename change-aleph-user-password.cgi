@@ -20,9 +20,9 @@ def main():
   try:
     data = json.loads(sys.stdin.read())
 
-    username = data['username']
-    password = data['password']
-    new_password = data['new_password']
+    username = data['username'].encode('utf-8')
+    password = data['password'].encode('utf-8')
+    new_password = data['new_password'].encode('utf-8')
 
     if username == '' or password == '' or new_password == '':
       raise
@@ -40,8 +40,8 @@ def main():
   except:
     return_error(500, 'Internal Server Error')
 
-  if not user_valid:
-    return_error(401, 'Unauthorized')
+  # if not user_valid:
+  #   return_error(401, 'Unauthorized')
 
   db_user = fetch_user_from_db(username)
 
