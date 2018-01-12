@@ -87,14 +87,14 @@ def return_error(code, message):
     sys.exit()
 
 def validate_password(password):
-  if (len(password) == 0):
-    return (False, 'Password can not be empty')
-
-  if (re.search(ILLEGAL_CHARACTERS, password)):
-    return (False, 'Password contains illegal characters (%s)' % ILLEGAL_CHARACTERS)
+  if (len(password) < MIN_LENGTH):
+    return (False, 'Password must be atleast %s characters long' % MIN_LENGTH)
 
   if (len(password) > MAX_LENGTH):
     return (False, 'Password can not be longer than %s characters' % MAX_LENGTH)
+
+  if (not re.search(PASSWORD_VALIDATION, password)):
+    return (False, 'Password contains illegal characters')
 
   return (True, None)
 

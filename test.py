@@ -21,8 +21,9 @@ changeAlephUserPassword.DB_CONFIG = 'aleph/aleph@127.0.0.1:1521/ALEPH20'
 changeAlephUserPassword.FILES_DIR = '/tmp/'
 changeAlephUserPassword.FILE_PREFIX = 'user/'
 changeAlephUserPassword.LOG_DIR = 'logs/'
-changeAlephUserPassword.ILLEGAL_CHARACTERS = '#'
+changeAlephUserPassword.PASSWORD_VALIDATION = '^[\w$?*!,\-\.\u00C4\u00E4\u00D6\u00F6\u00C5\u00E5]*$'
 changeAlephUserPassword.MAX_LENGTH = 10
+changeAlephUserPassword.MIN_LENGTH = 8
 
 class TestClass(unittest.TestCase):
   def test_validate_password_valid(self):
@@ -31,12 +32,12 @@ class TestClass(unittest.TestCase):
     self.assertTrue(result)
     self.assertIsNone(error_message)
 
-  def test_validate_password_empty(self):
-    result, error_message = changeAlephUserPassword.validate_password('')
+  def test_validate_password_too_short(self):
+    result, error_message = changeAlephUserPassword.validate_password('aaaaaaa')
 
     self.assertFalse(result)
 
-    self.assertEqual(error_message, 'Password can not be empty')
+    self.assertEqual(error_message, 'Password must be atleast 8 characters long')
 
   def test_validate_password_too_long(self):
     result, error_message = changeAlephUserPassword.validate_password('12345678901')
@@ -48,7 +49,7 @@ class TestClass(unittest.TestCase):
     result, error_message = changeAlephUserPassword.validate_password('12345#789')
 
     self.assertFalse(result)
-    self.assertEqual(error_message, 'Password contains illegal characters (#)')
+    self.assertEqual(error_message, 'Password contains illegal characters')
 
   @patch('urllib2.urlopen', return_value=open('test/auth.xml', 'r'))
   def test_validate_user_valid(self, mock_urlib2_urlopen):
@@ -188,7 +189,7 @@ class TestClass(unittest.TestCase):
     expected_output = ('Content-Type: text/plain\n'
                        'Status: 400\n'
                        'Cache-Control: no-cache, no-store, max-age=0\n\n'
-                       '400 Bad Request: Password contains illegal characters (#)\n')
+                       '400 Bad Request: Password contains illegal characters\n')
 
     with self.assertRaises(SystemExit): 
       changeAlephUserPassword.main()
@@ -196,7 +197,7 @@ class TestClass(unittest.TestCase):
     self.assertEqual(mock_stdout.getvalue(), expected_output)
 
   @patch('sys.stdout', new_callable=StringIO)
-  @patch('sys.stdin', new=StringIO('{"username":"test","password":"test","new_password":"test"}'))
+  @patch('sys.stdin', new=StringIO('{"username":"test","password":"test","new_password":"testtest"}'))
   @patch('changeAlephUserPassword.validate_user', return_value=False)
   @patch.dict(os.environ, {'REQUEST_METHOD': 'POST'})
   def test_unauthorized(self, mock_validate_user, mock_stdout):
@@ -212,7 +213,7 @@ class TestClass(unittest.TestCase):
     self.assertEqual(mock_stdout.getvalue(), expected_output)
 
   @patch('sys.stdout', new_callable=StringIO)
-  @patch('sys.stdin', new=StringIO('{"username":"test","password":"test","new_password":"test"}'))
+  @patch('sys.stdin', new=StringIO('{"username":"test","password":"test","new_password":"testtest"}'))
   @patch('changeAlephUserPassword.validate_user', side_effect=urllib2.URLError('test'))
   @patch.dict(os.environ, {'REQUEST_METHOD': 'POST'})
   def test_validation_error(self, mock_validate_user, mock_stdout):
@@ -228,7 +229,7 @@ class TestClass(unittest.TestCase):
     self.assertEqual(mock_stdout.getvalue(), expected_output)
 
   @patch('sys.stdout', new_callable=StringIO)
-  @patch('sys.stdin', new=StringIO('{"username":"test","password":"test","new_password":"test"}'))
+  @patch('sys.stdin', new=StringIO('{"username":"test","password":"test","new_password":"testtest"}'))
   @patch('os.remove')
   @patch('changeAlephUserPassword.write_log_file')
   @patch('changeAlephUserPassword.execute_program', return_value=(open('test/output_error.txt', 'r').read(), None))
@@ -258,7 +259,7 @@ class TestClass(unittest.TestCase):
     ]
 
     expected_formatted_row_clean = 'TEST      GROUP          '
-    expected_formatted_row = 'TEST      GROUPtest      '
+    expected_formatted_row = 'TEST      GROUPtesttest  '
 
     with self.assertRaises(SystemExit): 
       changeAlephUserPassword.main()
@@ -278,7 +279,7 @@ class TestClass(unittest.TestCase):
   @patch('changeAlephUserPassword.write_input_file', return_value='008a2cc')
   @patch('changeAlephUserPassword.fetch_user_from_db')
   @patch('changeAlephUserPassword.validate_user', return_value=True)
-  @patch('sys.stdin', new=StringIO('{"username":"test","password":"test","new_password":"test"}'))
+  @patch('sys.stdin', new=StringIO('{"username":"test","password":"test","new_password":"testtest"}'))
   @patch.dict(os.environ, {'REQUEST_METHOD': 'POST'})
   def test_program_success(self, mock_validate_user, mock_fetch_user_from_db, mock_write_input_file, mock_execute_program, mock_write_log_file, mock_os_remove, mock_stdout):
     expected_output = ('Content-Type: text/plain\n'
@@ -302,7 +303,7 @@ class TestClass(unittest.TestCase):
     ]
 
     expected_formatted_row_clean = 'TEST      GROUP          '
-    expected_formatted_row = 'TEST      GROUPtest      '
+    expected_formatted_row = 'TEST      GROUPtesttest  '
     
     changeAlephUserPassword.main()
 
