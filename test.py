@@ -16,7 +16,7 @@ import subprocess
 changeAlephUserPassword = imp.load_source('changeAlephUserPassword', 'change-aleph-user-password.cgi')
 
 changeAlephUserPassword.ALEPH_URL = 'http://test.com'
-changeAlephUserPassword.ALEPH_USER_LIBRARY = 'usr00'
+changeAlephUserPassword.ALEPH_USER_LIBRARY = 'usr'
 changeAlephUserPassword.DB_CONFIG = 'aleph/aleph@127.0.0.1:1521/ALEPH20'
 changeAlephUserPassword.FILES_DIR = '/tmp/'
 changeAlephUserPassword.FILE_PREFIX = 'user/'
@@ -81,7 +81,7 @@ class TestClass(unittest.TestCase):
 
     result = changeAlephUserPassword.fetch_user_from_db('test')
 
-    mock_cx_oracle_connect.return_value.cursor.return_value.execute.assert_called_once_with("SELECT * FROM usr00.z66 WHERE Z66_REC_KEY = 'TEST'")
+    mock_cx_oracle_connect.return_value.cursor.return_value.execute.assert_called_once_with("SELECT * FROM usr.z66 WHERE Z66_REC_KEY = 'TEST'")
     self.assertEqual(result, [
       {
         'value': row[0],
