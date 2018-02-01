@@ -17,6 +17,7 @@ changeAlephUserPassword = imp.load_source('changeAlephUserPassword', 'change-ale
 
 changeAlephUserPassword.ALEPH_URL = 'http://test.com'
 changeAlephUserPassword.ALEPH_USER_LIBRARY = 'usr'
+changeAlephUserPassword.ALEPH_USER_DB = 'usr'
 changeAlephUserPassword.DB_CONFIG = 'aleph/aleph@127.0.0.1:1521/ALEPH20'
 changeAlephUserPassword.FILES_DIR = '/tmp/'
 changeAlephUserPassword.FILE_PREFIX = 'user/'

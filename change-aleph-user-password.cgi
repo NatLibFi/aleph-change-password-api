@@ -120,7 +120,7 @@ def fetch_user_from_db(username):
 
   cursor = db.cursor() 
 
-  cursor.execute("SELECT * FROM %s.z66 WHERE Z66_REC_KEY = '%s'" % (ALEPH_USER_LIBRARY, username.upper()))
+  cursor.execute("SELECT * FROM %s.z66 WHERE Z66_REC_KEY = '%s'" % (ALEPH_USER_DB, username.upper()))
  
   result = []
 
