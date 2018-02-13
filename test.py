@@ -135,7 +135,7 @@ class TestClass(unittest.TestCase):
     result = changeAlephUserPassword.execute_program('test')
 
     mock_subprocess_popen.assert_called_once_with(['/usr/bin/env', 'csh'], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-    mock_subprocess_popen.return_value.stdin.write.assert_has_calls([call('source /exlibris/aleph/a20_2/alephm/.cshrc\n'), call('/exlibris/aleph/a20_2/aleph/proc/p_file_06 USR00,user/test,z66,UPDATE,NO-FIX,Y,Y,\n'), call('exit\n')])
+    mock_subprocess_popen.return_value.stdin.write.assert_has_calls([call('source /exlibris/aleph/a20_2/alephm/.cshrc\n'), call('/exlibris/aleph/a20_2/aleph/proc/p_file_06 usr,user/test,z66,UPDATE,NO-FIX,Y,Y,\n'), call('exit\n')])
 
     self.assertEqual(result, ('test_output', 'test_error'))
 
