@@ -75,7 +75,7 @@ def main():
 
 def start_http(mimetype=None, headers={}):
   if mimetype:
-    print 'Content-Type: %s' % mimetype 
+    print 'Content-Type: %s' % mimetype
   for name, value in headers.items():
     print '%s: %s' % (name, value)
   print 'Cache-Control: no-cache, no-store, max-age=0'
@@ -118,10 +118,10 @@ def validate_user(username, password):
 def fetch_user_from_db(username):
   db = cx_Oracle.connect(DB_CONFIG)
 
-  cursor = db.cursor() 
+  cursor = db.cursor()
 
-  cursor.execute("SELECT * FROM %s.z66 WHERE Z66_REC_KEY = '%s'" % (ALEPH_USER_DB, username.upper()))
- 
+  cursor.execute("SELECT * FROM %s.z66 WHERE Z66_REC_KEY = '%s'" % (ALEPH_USER_LIBRARY, username.upper()))
+
   result = []
 
   for col, description in zip(cursor.fetchone(), cursor.description):
@@ -163,7 +163,7 @@ def write_input_file(formatted_row):
 def execute_program(file_id):
   p = subprocess.Popen(['/usr/bin/env', 'csh'], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
   p.stdin.write('source /exlibris/aleph/a20_2/alephm/.cshrc\n')
-  p.stdin.write('/exlibris/aleph/a20_2/aleph/proc/p_file_06 USR00,%s%s,z66,UPDATE,NO-FIX,Y,Y,\n' % (FILE_PREFIX, file_id))
+  p.stdin.write('/exlibris/aleph/a20_2/aleph/proc/p_file_06 %s,%s%s,z66,UPDATE,NO-FIX,Y,Y,\n' % (ALEPH_USER_LIBRARY, FILE_PREFIX, file_id))
   p.stdin.write('exit\n')
 
   (output, error) = p.communicate()
