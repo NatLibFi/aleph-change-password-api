@@ -75,7 +75,7 @@ def main():
 
 def start_http(mimetype=None, headers={}):
   if mimetype:
-    print 'Content-Type: %s' % mimetype 
+    print 'Content-Type: %s' % mimetype
   for name, value in headers.items():
     print '%s: %s' % (name, value)
   print 'Cache-Control: no-cache, no-store, max-age=0'
@@ -116,12 +116,13 @@ def validate_user(username, password):
   return True
 
 def fetch_user_from_db(username):
-  db = cx_Oracle.connect(DB_CONFIG)
+  dsn = cx_Oracle.makedsn(DB_HOST, DB_PORT, sid=DB_SID)
+  db = cx_Oracle.connect(user=DB_USERNAME, password=DB_PASSWORD, dsn=dsn)
 
-  cursor = db.cursor() 
+  cursor = db.cursor()
 
   cursor.execute("SELECT * FROM %s.z66 WHERE Z66_REC_KEY = '%s'" % (ALEPH_USER_DB, username.upper()))
- 
+
   result = []
 
   for col, description in zip(cursor.fetchone(), cursor.description):
