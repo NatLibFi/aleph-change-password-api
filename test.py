@@ -23,6 +23,7 @@ changeAlephUserPassword.DB_PASSWORD = 'ALEPH'
 changeAlephUserPassword.DB_HOST = '10.0.2.2'
 changeAlephUserPassword.DB_PORT = '1521'
 changeAlephUserPassword.DB_SID = 'ALEPH23'
+changeAlephUserPassword.ALEPH_DIR = '/aleph/'
 changeAlephUserPassword.FILES_DIR = '/tmp/'
 changeAlephUserPassword.FILE_PREFIX = 'user/'
 changeAlephUserPassword.LOG_DIR = 'logs/'
@@ -143,7 +144,7 @@ class TestClass(unittest.TestCase):
     result = changeAlephUserPassword.execute_program('test')
 
     mock_subprocess_popen.assert_called_once_with(['/usr/bin/env', 'csh'], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-    mock_subprocess_popen.return_value.stdin.write.assert_has_calls([call('source /exlibris/aleph/a20_2/alephm/.cshrc\n'), call('/exlibris/aleph/a20_2/aleph/proc/p_file_06 USR00,user/test,z66,UPDATE,NO-FIX,Y,Y,\n'), call('exit\n')])
+    mock_subprocess_popen.return_value.stdin.write.assert_has_calls([call('source /aleph/alephm/.cshrc\n'), call('/aleph/aleph/proc/p_file_06 USR00,user/test,z66,UPDATE,NO-FIX,Y,Y,\n'), call('exit\n')])
 
     self.assertEqual(result, ('test_output', 'test_error'))
 
