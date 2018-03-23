@@ -115,12 +115,16 @@ class TestClass(unittest.TestCase):
       {
         'value': 'test',
         'desc': ('Z66_USER_PASSWORD', cx_Oracle.FIXED_CHAR, 10, 10, None, None, 0)
+      },
+      {
+        'value': '0',
+        'desc': ('Z66_USER_PASSWORD', cx_Oracle.NUMBER, 3, None, 2, 0, 1)
       }
     ]
 
     result = changeAlephUserPassword.format_row(row)
 
-    self.assertEqual(result, 'TEST      GROUPtest      ')
+    self.assertEqual(result, 'TEST      GROUPtest      0 ')
 
   @patch('changeAlephUserPassword.open')
   @patch('changeAlephUserPassword.uuid4', return_value='1cf1bc5f-2fe2-4e05-8f0d-6150abe7d61b')
