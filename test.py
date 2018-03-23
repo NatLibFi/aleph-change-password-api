@@ -52,7 +52,7 @@ class TestClass(unittest.TestCase):
     self.assertFalse(result)
     self.assertEqual(error_message, 'Password contains illegal characters')
 
-  @patch('urllib2.urlopen', return_value=open('test/auth.xml', 'r'))
+  @patch('urllib2.urlopen', return_value=open('test_data/auth.xml', 'r'))
   def test_validate_user_valid(self, mock_urlib2_urlopen):
     result = changeAlephUserPassword.validate_user('test', 'password')
 
@@ -60,7 +60,7 @@ class TestClass(unittest.TestCase):
 
     self.assertTrue(result)
 
-  @patch('urllib2.urlopen', return_value=open('test/auth_error.xml', 'r'))
+  @patch('urllib2.urlopen', return_value=open('test_data/auth_error.xml', 'r'))
   def test_validate_user_invalid(self, mock_urlib2_urlopen):
     result = changeAlephUserPassword.validate_user('test', 'password')
 
@@ -164,9 +164,9 @@ class TestClass(unittest.TestCase):
                        'Cache-Control: no-cache, no-store, max-age=0\n\n'
                        '404 Not Found\n')
 
-    with self.assertRaises(SystemExit): 
+    with self.assertRaises(SystemExit):
       changeAlephUserPassword.main()
-  
+
     self.assertEqual(mock_stdout.getvalue(), expected_output)
 
   @patch('sys.stdout', new_callable=StringIO)
@@ -178,9 +178,9 @@ class TestClass(unittest.TestCase):
                        'Cache-Control: no-cache, no-store, max-age=0\n\n'
                        '400 Bad Request\n')
 
-    with self.assertRaises(SystemExit): 
+    with self.assertRaises(SystemExit):
       changeAlephUserPassword.main()
-    
+
     self.assertEqual(mock_stdout.getvalue(), expected_output)
 
   @patch('sys.stdout', new_callable=StringIO)
@@ -192,9 +192,9 @@ class TestClass(unittest.TestCase):
                        'Cache-Control: no-cache, no-store, max-age=0\n\n'
                        '400 Bad Request: Password contains illegal characters\n')
 
-    with self.assertRaises(SystemExit): 
+    with self.assertRaises(SystemExit):
       changeAlephUserPassword.main()
-    
+
     self.assertEqual(mock_stdout.getvalue(), expected_output)
 
   @patch('sys.stdout', new_callable=StringIO)
@@ -207,7 +207,7 @@ class TestClass(unittest.TestCase):
                        'Cache-Control: no-cache, no-store, max-age=0\n\n'
                        '401 Unauthorized\n')
 
-    with self.assertRaises(SystemExit): 
+    with self.assertRaises(SystemExit):
       changeAlephUserPassword.main()
 
     mock_validate_user.assert_called_once_with('test', 'test')
@@ -223,7 +223,7 @@ class TestClass(unittest.TestCase):
                        'Cache-Control: no-cache, no-store, max-age=0\n\n'
                        '500 Internal Server Error\n')
 
-    with self.assertRaises(SystemExit): 
+    with self.assertRaises(SystemExit):
       changeAlephUserPassword.main()
 
     mock_validate_user.assert_called_once_with('test', 'test')
@@ -233,7 +233,7 @@ class TestClass(unittest.TestCase):
   @patch('sys.stdin', new=StringIO('{"username":"test","password":"test","new_password":"testtest"}'))
   @patch('os.remove')
   @patch('changeAlephUserPassword.write_log_file')
-  @patch('changeAlephUserPassword.execute_program', return_value=(open('test/output_error.txt', 'r').read(), None))
+  @patch('changeAlephUserPassword.execute_program', return_value=(open('test_data/output_error.txt', 'r').read(), None))
   @patch('changeAlephUserPassword.write_input_file', return_value='008a2cc')
   @patch('changeAlephUserPassword.fetch_user_from_db')
   @patch('changeAlephUserPassword.validate_user', return_value=True)
@@ -262,7 +262,7 @@ class TestClass(unittest.TestCase):
     expected_formatted_row_clean = 'TEST      GROUP          '
     expected_formatted_row = 'TEST      GROUPtesttest  '
 
-    with self.assertRaises(SystemExit): 
+    with self.assertRaises(SystemExit):
       changeAlephUserPassword.main()
 
     mock_validate_user.assert_called_once_with('test', 'test')
@@ -276,7 +276,7 @@ class TestClass(unittest.TestCase):
   @patch('sys.stdout', new_callable=StringIO)
   @patch('os.remove')
   @patch('changeAlephUserPassword.write_log_file')
-  @patch('changeAlephUserPassword.execute_program', return_value=(open('test/output.txt', 'r').read(), None))
+  @patch('changeAlephUserPassword.execute_program', return_value=(open('test_data/output.txt', 'r').read(), None))
   @patch('changeAlephUserPassword.write_input_file', return_value='008a2cc')
   @patch('changeAlephUserPassword.fetch_user_from_db')
   @patch('changeAlephUserPassword.validate_user', return_value=True)
@@ -305,7 +305,7 @@ class TestClass(unittest.TestCase):
 
     expected_formatted_row_clean = 'TEST      GROUP          '
     expected_formatted_row = 'TEST      GROUPtesttest  '
-    
+
     changeAlephUserPassword.main()
 
     mock_validate_user.assert_called_once_with('test', 'test')
