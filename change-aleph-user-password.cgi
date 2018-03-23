@@ -139,12 +139,17 @@ def format_row(row):
     val = col['value']
     desc = col['desc']
 
-    if val is None:
-      val = ' ' * desc[2]
-    elif type(val) != str:
-      val = str(val).ljust(desc[2])
+    if desc[1] == cx_Oracle.NUMBER:
+      size = desc[4]
     else:
-      val = val.ljust(desc[2])
+      size = desc[2]
+
+    if val is None:
+      val = ' ' * size
+    elif type(val) != str:
+      val = str(val).ljust(size)
+    else:
+      val = val.ljust(size)
 
     result.append(val)
 
