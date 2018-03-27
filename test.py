@@ -18,7 +18,12 @@ changeAlephUserPassword = imp.load_source('changeAlephUserPassword', 'change-ale
 changeAlephUserPassword.ALEPH_URL = 'http://test.com'
 changeAlephUserPassword.ALEPH_USER_LIBRARY = 'usr'
 changeAlephUserPassword.ALEPH_USER_DB = 'usr'
-changeAlephUserPassword.DB_CONFIG = 'aleph/aleph@127.0.0.1:1521/ALEPH20'
+changeAlephUserPassword.DB_USERNAME = 'ALEPH'
+changeAlephUserPassword.DB_PASSWORD = 'ALEPH'
+changeAlephUserPassword.DB_HOST = '10.0.2.2'
+changeAlephUserPassword.DB_PORT = '1521'
+changeAlephUserPassword.DB_SID = 'ALEPH23'
+changeAlephUserPassword.ALEPH_DIR = '/aleph/'
 changeAlephUserPassword.FILES_DIR = '/tmp/'
 changeAlephUserPassword.FILE_PREFIX = 'user/'
 changeAlephUserPassword.LOG_DIR = 'logs/'
@@ -111,12 +116,16 @@ class TestClass(unittest.TestCase):
       {
         'value': 'test',
         'desc': ('Z66_USER_PASSWORD', cx_Oracle.FIXED_CHAR, 10, 10, None, None, 0)
+      },
+      {
+        'value': '0',
+        'desc': ('Z66_USER_PASSWORD', cx_Oracle.NUMBER, 3, None, 2, 0, 1)
       }
     ]
 
     result = changeAlephUserPassword.format_row(row)
 
-    self.assertEqual(result, 'TEST      GROUPtest      ')
+    self.assertEqual(result, 'TEST      GROUPtest      0 ')
 
   @patch('changeAlephUserPassword.open')
   @patch('changeAlephUserPassword.uuid4', return_value='1cf1bc5f-2fe2-4e05-8f0d-6150abe7d61b')
@@ -135,7 +144,7 @@ class TestClass(unittest.TestCase):
     result = changeAlephUserPassword.execute_program('test')
 
     mock_subprocess_popen.assert_called_once_with(['/usr/bin/env', 'csh'], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-    mock_subprocess_popen.return_value.stdin.write.assert_has_calls([call('source /exlibris/aleph/a20_2/alephm/.cshrc\n'), call('/exlibris/aleph/a20_2/aleph/proc/p_file_06 USR00,user/test,z66,UPDATE,NO-FIX,Y,Y,\n'), call('exit\n')])
+    mock_subprocess_popen.return_value.stdin.write.assert_has_calls([call('source /aleph/alephm/.cshrc\n'), call('/aleph/aleph/proc/p_file_06 USR00,user/test,z66,UPDATE,NO-FIX,Y,Y,\n'), call('exit\n')])
 
     self.assertEqual(result, ('test_output', 'test_error'))
 

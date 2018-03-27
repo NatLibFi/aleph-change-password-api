@@ -75,7 +75,7 @@ def main():
 
 def start_http(mimetype=None, headers={}):
   if mimetype:
-    print 'Content-Type: %s' % mimetype 
+    print 'Content-Type: %s' % mimetype
   for name, value in headers.items():
     print '%s: %s' % (name, value)
   print 'Cache-Control: no-cache, no-store, max-age=0'
@@ -116,12 +116,13 @@ def validate_user(username, password):
   return True
 
 def fetch_user_from_db(username):
-  db = cx_Oracle.connect(DB_CONFIG)
+  dsn = cx_Oracle.makedsn(DB_HOST, DB_PORT, sid=DB_SID)
+  db = cx_Oracle.connect(user=DB_USERNAME, password=DB_PASSWORD, dsn=dsn)
 
-  cursor = db.cursor() 
+  cursor = db.cursor()
 
   cursor.execute("SELECT * FROM %s.z66 WHERE Z66_REC_KEY = '%s'" % (ALEPH_USER_DB, username.upper()))
- 
+
   result = []
 
   for col, description in zip(cursor.fetchone(), cursor.description):
@@ -138,12 +139,17 @@ def format_row(row):
     val = col['value']
     desc = col['desc']
 
-    if val is None:
-      val = ' ' * desc[2]
-    elif type(val) != str:
-      val = str(val).ljust(desc[2])
+    if desc[1] == cx_Oracle.NUMBER:
+      size = desc[4]
     else:
-      val = val.ljust(desc[2])
+      size = desc[2]
+
+    if val is None:
+      val = ' ' * size
+    elif type(val) != str:
+      val = str(val).ljust(size)
+    else:
+      val = val.ljust(size)
 
     result.append(val)
 
@@ -162,8 +168,8 @@ def write_input_file(formatted_row):
 
 def execute_program(file_id):
   p = subprocess.Popen(['/usr/bin/env', 'csh'], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-  p.stdin.write('source /exlibris/aleph/a20_2/alephm/.cshrc\n')
-  p.stdin.write('/exlibris/aleph/a20_2/aleph/proc/p_file_06 USR00,%s%s,z66,UPDATE,NO-FIX,Y,Y,\n' % (FILE_PREFIX, file_id))
+  p.stdin.write('source %salephm/.cshrc\n' % ALEPH_DIR)
+  p.stdin.write('%saleph/proc/p_file_06 %s,%s%s,z66,UPDATE,NO-FIX,Y,Y,\n' % (ALEPH_DIR, ALEPH_USER_DB.upper(), FILE_PREFIX, file_id))
   p.stdin.write('exit\n')
 
   (output, error) = p.communicate()
